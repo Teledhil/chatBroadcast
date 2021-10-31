@@ -1,7 +1,5 @@
 package com.teledhil.chatBroadcast;
 
-import java.io.IOException;
-
 import android.app.Activity;
 import android.content.Context;
 import android.net.wifi.WifiManager;
@@ -10,10 +8,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.os.Build;
+
+import java.io.IOException;
 
 public class MainActivity extends Activity {
 
@@ -29,10 +32,11 @@ public class MainActivity extends Activity {
 
 	EditText ventanaEnviado;
 	ListView ventanaRecibido;
+    private Handler mHandler;
 	private ArrayAdapter<String> arrayRecibidos;
 
 	public void setTextRecibido(String mensaje) {
-		arrayRecibidos.add("> " + mensaje);
+		arrayRecibidos.add(mensaje);
 	}
 	
 	public void setTextRecibidoOk(String mensaje) {
@@ -57,17 +61,19 @@ public class MainActivity extends Activity {
 		ventanaEnviado.setText(textoEnviado);
 		Log.d(TAG, "ventanaEnviado listo");
 
-		arrayRecibidos = new ArrayAdapter<String>(this, R.layout.mensaje);
-		ventanaRecibido = (ListView) findViewById(R.id.ListView01);
+		arrayRecibidos = new ArrayAdapter<>(this, R.layout.mensaje);
+		ventanaRecibido = findViewById(R.id.ListView01);
         ventanaRecibido.setAdapter(arrayRecibidos);
 		Log.d(TAG, "ventanaRecibido listo");
 
+		mHandler = new MessageHandler(this);
+
 		carretera = new UDPBroadcast(
-				(WifiManager) getSystemService(Context.WIFI_SERVICE),
-				"chatBroadcast", mHandler);
+				(WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE),
+				mHandler);
 		Log.d(TAG, "carretera lista");
 
-		Button boton = (Button) findViewById(R.id.Button01);
+		Button boton = findViewById(R.id.Button01);
 		boton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				// Perform action on click
@@ -85,43 +91,31 @@ public class MainActivity extends Activity {
 		});
 		Log.d(TAG, "Boton listo");
 
+
+        Window w = getWindow(); // in Activity's onCreate() for instance
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            w.setStatusBarColor(0x00000000);  // transparent
+            w.setNavigationBarColor(0x0);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+        }
+
 	}
 	
 	@Override
 	 public void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onPause();
-		
-		//Cierra el socket
-		carretera.cerrar();
-	}
+        // TODO Auto-generated method stub
+        super.onDestroy();
+        super.onPause();
+
+        //Cierra el socket
+        carretera.cerrar();
+    }
 
 	
 
-	private final Handler mHandler = new Handler() {
-
-		@Override
-		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
-			super.handleMessage(msg);
-
-			// byte[] writeBuf = (byte[]) msg.obj;
-			// construct a string from the buffer
-			// String writeMessage = new String(writeBuf);
-			// setTextRecibido(writeMessage);
-			switch (msg.what) {
-			case MENSAJE_UDP_BROADCAST_RECIBIDO:
-				setTextRecibido(msg.obj.toString());
-				break;
-			case MENSAJE_UDP_BROADCAST_OK:
-				setTextRecibidoOk(msg.obj.toString());
-				break;
-			case MENSAJE_UDP_BROADCAST_ERROR:
-				setTextRecibidoError(msg.obj.toString());
-				break;
-			}
-		}
-
-	};
 
 }

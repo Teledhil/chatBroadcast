@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- base set of styles that apply to all versions -->
-    <style name="BaseAppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorPrimaryDark">@color/primaryTextColor</item>
-        <item name="colorAccent">@color/secondaryColor</item>
+    <style name="MyTheme" parent="android:Theme.Material.NoActionBar" >
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">#00000000</item>
     </style>
-
-    <!-- declare the theme name that's actually applied in the manifest file -->
-    <style name="AppTheme" parent="BaseAppTheme" />
 </resources>

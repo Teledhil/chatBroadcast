@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="caja_recibido">> </string>
-    <string name="caja_envio"> </string>
+    <string name="caja_recibido" translatable="false">> </string>
+    <string name="caja_envio" translatable="false"> </string>
     <string name="boton">Enviar</string>
-    <string name="hello">Chat por UDP broadcasting!</string>
     <string name="app_name">UDP Chat</string>
+    <string name="enviar">Enviar</string>
+    <string name="message">Mensaje</string>
 </resources>
